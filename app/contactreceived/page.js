@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { FiUser, FiMail, FiMessageSquare, FiClock, FiSearch } from "react-icons/fi";
-
+import AdminSidebar from "../components/adminsidebar";
 const ContactRec = () => {
   const [contacts, setContacts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -68,6 +68,8 @@ const ContactRec = () => {
   );
 
   return (
+    <div className="flex">
+   <AdminSidebar />
     <div className="max-w-6xl mx-auto p-6">
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
@@ -211,6 +213,8 @@ const ContactRec = () => {
         </div>
       )}
     </div>
+    
+</div>
   );
 };
 
