@@ -2,8 +2,7 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "../components/sidebar";
 import { useUser } from "@clerk/nextjs";
-import { FiBook, FiCalendar, FiAward, FiBarChart2, FiClock, FiDownload } from "react-icons/fi";
-import { Line, Doughnut } from "react-chartjs-2";
+import { FiBook, FiClock, FiBarChart2 } from "react-icons/fi";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -15,6 +14,12 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
+import StatsCard from "./StatsCard";
+import PerformanceChart from "./PerformanceChart";
+import CourseProgressChart from "./CourseProgressChart";
+import AssignmentsTable from "./AssignmentsTable";
+import CourseCard from "./CourseCard";
+import WelcomeHeader from "./WelcomeHeader";
 
 // Register ChartJS components
 ChartJS.register(
@@ -172,100 +177,34 @@ const Dashboard = () => {
       {/* Scrollable Main Content Area */}
       <div className="flex-1 overflow-y-auto">
         <div className="p-6 md:p-8">
-          {/* Welcome Header */}
-          <div className="mb-8">
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
-              Welcome back, {user.firstName || "Student"}!
-            </h1>
-            <p className="text-gray-600">Here's what's happening with your courses</p>
-          </div>
+          <WelcomeHeader user={user} />
 
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-500 text-sm font-medium">Active Courses</p>
-                  <h3 className="text-2xl font-bold text-gray-800 mt-1">{courses.length}</h3>
-                </div>
-                <div className="p-3 rounded-lg bg-indigo-50 text-indigo-600">
-                  <FiBook className="w-6 h-6" />
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-500 text-sm font-medium">Pending Assignments</p>
-                  <h3 className="text-2xl font-bold text-gray-800 mt-1">
-                    {assignments.filter(a => a.status === 'pending').length}
-                  </h3>
-                </div>
-                <div className="p-3 rounded-lg bg-blue-50 text-blue-600">
-                  <FiClock className="w-6 h-6" />
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-500 text-sm font-medium">Average Progress</p>
-                  <h3 className="text-2xl font-bold text-gray-800 mt-1">
-                    {Math.round(courses.reduce((acc, course) => acc + course.progress, 0) / courses.length)}%
-                  </h3>
-                </div>
-                <div className="p-3 rounded-lg bg-green-50 text-green-600">
-                  <FiBarChart2 className="w-6 h-6" />
-                </div>
-              </div>
-            </div>
+            <StatsCard 
+              title="Active Courses" 
+              value={courses.length} 
+              icon={FiBook} 
+              colorClass="bg-indigo-50 text-indigo-600" 
+            />
+            <StatsCard 
+              title="Pending Assignments" 
+              value={assignments.filter(a => a.status === 'pending').length} 
+              icon={FiClock} 
+              colorClass="bg-blue-50 text-blue-600" 
+            />
+            <StatsCard 
+              title="Average Progress" 
+              value={Math.round(courses.reduce((acc, course) => acc + course.progress, 0) / courses.length) + '%'} 
+              icon={FiBarChart2} 
+              colorClass="bg-green-50 text-green-600" 
+            />
           </div>
 
           {/* Performance Charts */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">Your Performance Trend</h3>
-              <div className="h-64">
-                <Line
-                  data={performanceData}
-                  options={{
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                      legend: {
-                        position: 'top',
-                      },
-                    },
-                    scales: {
-                      y: {
-                        beginAtZero: true,
-                        max: 100,
-                      },
-                    },
-                  }}
-                />
-              </div>
-            </div>
-
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">Course Progress</h3>
-              <div className="h-64">
-                <Doughnut
-                  data={courseProgressData}
-                  options={{
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                      legend: {
-                        position: 'bottom',
-                      },
-                    },
-                  }}
-                />
-              </div>
-            </div>
+            <PerformanceChart data={performanceData} />
+            <CourseProgressChart data={courseProgressData} />
           </div>
 
           {/* Upcoming Assignments */}
@@ -276,46 +215,7 @@ const Dashboard = () => {
                 View All
               </button>
             </div>
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assignment</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Course</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Due Date</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {assignments.map((assignment) => (
-                    <tr key={assignment.id}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{assignment.title}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{assignment.course}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {new Date(assignment.dueDate).toLocaleDateString()}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          assignment.status === 'completed' 
-                            ? 'bg-green-100 text-green-800'
-                            : assignment.status === 'overdue'
-                              ? 'bg-red-100 text-red-800'
-                              : 'bg-yellow-100 text-yellow-800'
-                        }`}>
-                          {assignment.status.charAt(0).toUpperCase() + assignment.status.slice(1)}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <button className="text-indigo-600 hover:text-indigo-900">
-                          <FiDownload className="w-4 h-4" />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <AssignmentsTable assignments={assignments} />
           </div>
 
           {/* Your Courses */}
@@ -328,35 +228,7 @@ const Dashboard = () => {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {courses.map((course) => (
-                <div key={course.id} className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
-                  <div className="bg-indigo-50 p-4">
-                    <h4 className="text-lg font-semibold text-gray-800">{course.title}</h4>
-                    <p className="text-sm text-gray-600">{course.instructor}</p>
-                  </div>
-                  <div className="p-4">
-                    <div className="mb-3">
-                      <div className="flex justify-between text-sm text-gray-600 mb-1">
-                        <span>Progress</span>
-                        <span>{course.progress}%</span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div 
-                          className="bg-indigo-600 h-2 rounded-full" 
-                          style={{ width: `${course.progress}%` }}
-                        ></div>
-                      </div>
-                    </div>
-                    {course.nextAssignment && (
-                      <div className="text-sm">
-                        <p className="text-gray-500">Next Assignment:</p>
-                        <p className="text-gray-800 font-medium">{course.nextAssignment}</p>
-                      </div>
-                    )}
-                    <button className="mt-4 w-full py-2 bg-indigo-50 text-indigo-600 rounded-md text-sm font-medium hover:bg-indigo-100 transition-colors">
-                      View Course
-                    </button>
-                  </div>
-                </div>
+                <CourseCard key={course.id} course={course} />
               ))}
             </div>
           </div>
