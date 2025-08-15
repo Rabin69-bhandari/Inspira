@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import { FiBook, FiClock, FiCalendar, FiAward, FiSearch, FiStar, FiUsers, FiBarChart2 } from "react-icons/fi";
 import Sidebar from "../components/sidebar";
@@ -12,6 +13,7 @@ export default function CoursesPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const { user } = useUser();
   const router = useRouter();
+
   const goToPage = (courseId) => {
     router.push(`/courselearn/${courseId}`);
   };
@@ -34,8 +36,8 @@ export default function CoursesPage() {
   }, []);
 
   const filteredCourses = courses.filter(course =>
-    course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    course.description.toLowerCase().includes(searchTerm.toLowerCase())
+    course.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    course.description?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (loading) return (
@@ -66,10 +68,10 @@ export default function CoursesPage() {
       <div className="flex-shrink-0">
         <Sidebar />
       </div>
-      
-      {/* Scrollable Content Area */}
+
+      {/* Scrollable Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Fixed Header */}
+        {/* Header */}
         <div className="bg-white border-b border-gray-200 p-6">
           <h1 className="text-2xl font-bold text-gray-900">Course Catalog</h1>
           <div className="relative max-w-md mt-4">
@@ -91,27 +93,31 @@ export default function CoursesPage() {
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <StatCard 
+              key="total"
               icon={<FiBook className="w-6 h-6" />}
               title="Total Courses"
               value={courses.length}
               color="bg-blue-100 text-blue-600"
             />
             <StatCard 
+              key="learners"
               icon={<FiUsers className="w-6 h-6" />}
               title="Active Learners"
               value={courses.reduce((acc, course) => acc + (course.enrolled || 0), 0)}
               color="bg-green-100 text-green-600"
             />
             <StatCard 
+              key="rating"
               icon={<FiStar className="w-6 h-6" />}
               title="Avg Rating"
               value={(courses.reduce((acc, course) => acc + (course.rating || 0), 0) / (courses.length || 1)).toFixed(1)}
               color="bg-yellow-100 text-yellow-600"
             />
             <StatCard 
+              key="categories"
               icon={<FiBarChart2 className="w-6 h-6" />}
               title="Categories"
-              value={new Set(courses.map(course => course.category)).size}
+              value={new Set(courses.map(course => course.category || 'General')).size}
               color="bg-purple-100 text-purple-600"
             />
           </div>
@@ -119,7 +125,6 @@ export default function CoursesPage() {
           {/* Course Grid */}
           <div className="mb-8">
             <h2 className="text-xl font-bold text-gray-800 mb-6">Available Courses</h2>
-            
             {filteredCourses.length === 0 ? (
               <div className="bg-white rounded-xl shadow-md border border-gray-200 p-12 text-center">
                 <svg className="mx-auto h-16 w-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -167,9 +172,10 @@ function StatCard({ icon, title, value, color }) {
 
 // Course Card Component
 function CourseCard({ course, onEnroll }) {
+  const statusColor = getStatusColor(course.status || 'not-started').badge;
+
   return (
     <div className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300">
-      {/* Course Image */}
       <div className="h-48 bg-gray-200 relative overflow-hidden">
         {course.imageUrl ? (
           <img 
@@ -184,13 +190,12 @@ function CourseCard({ course, onEnroll }) {
           </div>
         )}
         <div className="absolute top-4 left-4">
-          <span className={`px-3 py-1 text-xs font-medium rounded-full ${getStatusColor(course.status).badge}`}>
+          <span className={`px-3 py-1 text-xs font-medium rounded-full ${statusColor}`}>
             {formatStatus(course.status)}
           </span>
         </div>
       </div>
       
-      {/* Course Content */}
       <div className="p-6">
         <div className="flex justify-between items-start mb-2">
           <span className="text-sm font-medium text-blue-600">{course.category || 'General'}</span>
@@ -199,10 +204,8 @@ function CourseCard({ course, onEnroll }) {
             <span className="font-medium">{course.rating || '4.5'}</span>
           </div>
         </div>
-        
         <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2">{course.title}</h3>
         <p className="text-gray-600 mb-4 line-clamp-3">{course.description}</p>
-        
         <button 
           onClick={onEnroll}
           className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200"
@@ -227,18 +230,10 @@ function formatStatus(status) {
 
 function getStatusColor(status) {
   const colors = {
-    'not-started': {
-      badge: 'bg-gray-100 text-gray-800'
-    },
-    'in-progress': {
-      badge: 'bg-blue-100 text-blue-800'
-    },
-    'completed': {
-      badge: 'bg-green-100 text-green-800'
-    },
-    'upcoming': {
-      badge: 'bg-purple-100 text-purple-800'
-    }
+    'not-started': { badge: 'bg-gray-100 text-gray-800' },
+    'in-progress': { badge: 'bg-blue-100 text-blue-800' },
+    'completed': { badge: 'bg-green-100 text-green-800' },
+    'upcoming': { badge: 'bg-purple-100 text-purple-800' }
   };
   return colors[status] || colors['not-started'];
 }
