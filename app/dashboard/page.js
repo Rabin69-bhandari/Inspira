@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Sidebar from "../components/sidebar";
-import { useUser } from "@clerk/nextjs";
+import { ClerkLoading, ClerkLoaded, useUser } from "@clerk/nextjs";
 import { FiBook, FiClock, FiBarChart2 } from "react-icons/fi";
 import {
   Chart as ChartJS,
@@ -48,6 +48,7 @@ const Dashboard = () => {
       imageUrl: user.imageUrl,
       email: user.primaryEmailAddress?.emailAddress
     };
+
 
     // Send user data to backend
     fetch("/api/save-user", {
@@ -168,6 +169,8 @@ const Dashboard = () => {
   };
 
   return (
+    <>
+  
     <div className="flex h-screen overflow-hidden bg-gray-50">
       {/* Fixed Sidebar - won't scroll */}
       <div className="flex-shrink-0">
@@ -226,15 +229,16 @@ const Dashboard = () => {
                 View All
               </button>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {courses.map((course) => (
-                <CourseCard key={course.id} course={course} />
-              ))}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 overflow-x-scroll">
+  
+                <CourseCard  />
+         
             </div>
           </div>
         </div>
       </div>
     </div>
+    </>
   );
 };
 

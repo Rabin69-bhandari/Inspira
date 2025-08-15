@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { FiBook, FiClock, FiCalendar, FiAward, FiSearch } from "react-icons/fi";
 import Sidebar from "../components/sidebar";
+import { useUser } from "@clerk/nextjs";
 
 export default function CoursesPage() {
   const [courses, setCourses] = useState([]);
@@ -9,15 +10,21 @@ export default function CoursesPage() {
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
 
+  const {user} = useUser()
+
+  console.log(courses)
+
   const handleEnroll = async (courseId) => {
+
     try {
+      const clerkId = user?.id; // Replace with logged-in user's _id
   
       const res = await fetch("/api/save-user", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({courseId }),
+        body: JSON.stringify({ clerkId, courseId }),
       });
   
       const data = await res.json();
