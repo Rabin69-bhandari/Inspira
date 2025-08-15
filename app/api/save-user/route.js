@@ -18,15 +18,16 @@ export async function POST(request) {
 
 export async function PUT(request) {
   try {
-    const { userId, courseId } = await request.json();
+    const { clerkId, courseId } = await request.json();
+    // clerkId is sent from the frontend
 
     const client = await clientPromise;
     const db = client.db("inspira");
 
-    // Update user by adding courseId to enrolledCourses array
-    const result = await db.collection("users").updateOne(
-      { _id: new ObjectId(userId) },
-      { $addToSet: { enrolledCourses: new ObjectId(courseId) } } // prevents duplicates
+    // Update user by matching clerkId
+    const result = await db.collection("user").updateOne(
+      { clerkId: clerkId }, // match the clerkId
+      { $addToSet: { enrolledCourses: new ObjectId(courseId) } } // add courseId to array
     );
 
     if (result.matchedCount === 0) {
