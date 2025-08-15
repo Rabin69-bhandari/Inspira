@@ -42,7 +42,6 @@ const Sidebar = () => {
         <nav className="flex-1 space-y-4">
           {[
             { href: "/dashboard", icon: <FiHome size={20} />, label: "Dashboard" },
-            { href: "/profile", icon: <FiUser size={20} />, label: "Profile" },
             { href: "/marketplace", icon: <IoBagSharp size={20} />, label: "Market Place" },
             { href: "/notifications", icon: <IoIosNotificationsOutline size={20} />, label: "Notification" },
             { href: "/contact", icon: <MdHelpOutline size={20} />, label: "Help And Support" },
