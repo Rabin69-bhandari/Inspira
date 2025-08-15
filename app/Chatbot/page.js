@@ -1,6 +1,7 @@
 // app/components/Chatbot/page.js
 'use client';
 import { useState, useEffect, useRef } from 'react';
+import Sidebar from "../components/sidebar";
 import { FiMessageSquare, FiX, FiSend, FiBook, FiCalendar, FiFileText } from 'react-icons/fi';
 
 const Chatbot = ({ mode = 'page' }) => {
@@ -205,6 +206,8 @@ const Chatbot = ({ mode = 'page' }) => {
 
   // Page mode
   return (
+    <div className='flex h-screen overflow-hidden bg-gray-50'>
+        <Sidebar />
     <div className="max-w-4xl mx-auto p-6">
       <div className="flex items-center gap-3 mb-6">
         <FiMessageSquare className="text-indigo-600 text-2xl" />
@@ -259,6 +262,7 @@ const Chatbot = ({ mode = 'page' }) => {
         </div>
       </div>
     </div>
+     </div>
   );
 };
 
