@@ -1,253 +1,172 @@
 'use client';
-import { useState, useEffect } from 'react';
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
-import { FiUser, FiMail, FiCalendar, FiEdit, FiSave, FiLock, FiArrowLeft } from 'react-icons/fi';
+import { useState, useCallback } from 'react';
+import { FiUser, FiMail, FiLock, FiEdit, FiSave, FiChevronLeft } from 'react-icons/fi';
 import { useRouter } from 'next/navigation';
 
-export default function ProfilePage() {
-  const [isEditing, setIsEditing] = useState(false);
-  const [toast, setToast] = useState(null);
+const COLORS = {
+  primary: '#3B82F6',
+  secondary: '#60A5FA',
+  light: '#EFF6FF',
+  dark: '#1E40AF',
+  text: '#1F2937',
+  muted: '#6B7280'
+};
+
+export default function StudentProfile() {
   const router = useRouter();
-
-  // Mock user data - replace with actual user data from your auth provider
-  const [user, setUser] = useState({
-    name: 'John Doe',
-    email: 'john.doe@example.com',
-    joinDate: 'January 15, 2023',
-    bio: 'Frontend developer passionate about building beautiful user interfaces.',
+  const [isEditing, setIsEditing] = useState(false);
+  const [student, setStudent] = useState({
+    name: 'Alex Johnson',
+    image: '/default-avatar.jpg',
+    cohort: 'Fall 2023',
+    semester: 'Semester 4',
+    email: 'alex.johnson@university.edu',
+    about: 'Computer Science major with interest in AI and Machine Learning. Currently completing my senior year.',
+    recentCourse: 'CS 401 - Advanced Algorithms'
   });
 
-  const formik = useFormik({
-    initialValues: {
-      name: user.name,
-      email: user.email,
-      bio: user.bio,
-    },
-    validationSchema: Yup.object({
-      name: Yup.string().required('Name is required'),
-      email: Yup.string().email('Invalid email address').required('Email is required'),
-      bio: Yup.string().max(200, 'Bio should not exceed 200 characters'),
-    }),
-    onSubmit: async (values) => {
-      try {
-        // Simulate API call to update user profile
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        setUser({
-          ...user,
-          name: values.name,
-          email: values.email,
-          bio: values.bio,
-        });
-        
-        setToast({
-          visible: true,
-          message: 'Profile updated successfully!',
-          type: 'success'
-        });
-        
-        setIsEditing(false);
-      } catch (error) {
-        setToast({
-          visible: true,
-          message: 'Failed to update profile. Please try again.',
-          type: 'error'
-        });
-      }
-    },
-  });
+  const handleSubmit = useCallback((e) => {
+    e.preventDefault();
+    // In a real app, you would save to database here
+    setIsEditing(false);
+  }, []);
 
-  // Auto-hide toast after 5 seconds
-  useEffect(() => {
-    if (toast?.visible) {
-      const timer = setTimeout(() => {
-        setToast({ ...toast, visible: false });
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [toast]);
+  const handleChange = useCallback((e) => {
+    const { name, value } = e.target;
+    setStudent(prev => ({ ...prev, [name]: value }));
+  }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 relative">
-      {/* Back arrow in top left */}
+    <div className="min-h-screen bg-gray-50 p-6">
       <button 
         onClick={() => router.back()}
-        className="absolute top-4 left-4 p-2 rounded-full hover:bg-gray-100 transition-colors"
-        aria-label="Go back"
+        className="flex items-center text-gray-600 hover:text-gray-800 mb-6"
       >
-        <FiArrowLeft className="h-6 w-6 text-gray-600" />
+        <FiChevronLeft className="mr-1" /> Back
       </button>
 
-      <div className="max-w-3xl mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">
-            My Profile
-          </h1>
-        </div>
-
-        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-          {/* Profile Header */}
-          <div className="bg-gradient-to-r from-indigo-500 to-purple-600 p-6 text-white">
-            <div className="flex flex-col items-center sm:flex-row sm:items-end">
-              <div className="relative mb-4 sm:mb-0 sm:mr-6">
-                <div className="w-24 h-24 rounded-full bg-white bg-opacity-20 flex items-center justify-center">
-                  <FiUser className="h-12 w-12" />
-                </div>
+      <div className="max-w-6xl mx-auto bg-white rounded-xl shadow-md overflow-hidden">
+        <div className="md:flex">
+          {/* Left Panel - Profile Image and Basic Info */}
+          <div className="md:w-1/3 p-8 border-r border-gray-200">
+            <div className="flex flex-col items-center">
+              <div className="relative mb-4">
+                <img 
+                  src={student.image} 
+                  alt="Student" 
+                  className="w-40 h-40 rounded-full object-cover border-4 border-blue-100"
+                />
                 {isEditing && (
-                  <button className="absolute bottom-0 right-0 bg-white rounded-full p-2 shadow-md">
-                    <FiEdit className="h-4 w-4 text-indigo-600" />
+                  <button className="absolute bottom-2 right-2 bg-white p-2 rounded-full shadow-md">
+                    <FiEdit className="text-blue-500" />
                   </button>
                 )}
               </div>
-              <div>
+              
+              {isEditing ? (
+                <input
+                  type="text"
+                  name="name"
+                  value={student.name}
+                  onChange={handleChange}
+                  className="text-2xl font-bold text-center mb-2 px-2 py-1 border rounded"
+                />
+              ) : (
+                <h2 className="text-2xl font-bold text-gray-800 mb-2">{student.name}</h2>
+              )}
+              
+              <div className="text-center mb-6">
+                <p className="text-gray-600">{student.cohort}</p>
+                <p className="text-gray-600">{student.semester}</p>
+              </div>
+
+              <div className="w-full">
+                <h3 className="font-semibold text-gray-700 mb-2">Recent Course</h3>
                 {isEditing ? (
                   <input
-                    name="name"
-                    value={formik.values.name}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    className="text-2xl font-bold bg-white bg-opacity-20 rounded px-3 py-1 w-full sm:w-auto"
+                    type="text"
+                    name="recentCourse"
+                    value={student.recentCourse}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border rounded mb-4"
                   />
                 ) : (
-                  <h2 className="text-2xl font-bold">{user.name}</h2>
+                  <p className="bg-blue-50 text-blue-800 px-4 py-2 rounded-lg">{student.recentCourse}</p>
                 )}
-                <p className="mt-1 opacity-90">{user.email}</p>
               </div>
             </div>
           </div>
 
-          {/* Profile Content */}
-          <div className="p-6">
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              {/* Personal Info */}
+          {/* Right Panel - About Me and Contact Info */}
+          <div className="md:w-2/3 p-8">
+            <div className="mb-8">
+              <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                <FiUser className="mr-2" /> About Me
+              </h3>
+              {isEditing ? (
+                <textarea
+                  name="about"
+                  value={student.about}
+                  onChange={handleChange}
+                  rows="4"
+                  className="w-full px-3 py-2 border rounded"
+                />
+              ) : (
+                <p className="text-gray-700">{student.about}</p>
+              )}
+            </div>
+
+            <div className="space-y-6">
               <div>
-                <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
-                  <FiUser className="mr-2" /> Personal Information
+                <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                  <FiMail className="mr-2" /> Contact Information
                 </h3>
-                
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-500">Full Name</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
                     {isEditing ? (
-                      <>
-                        <input
-                          name="name"
-                          value={formik.values.name}
-                          onChange={formik.handleChange}
-                          onBlur={formik.handleBlur}
-                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                        />
-                        {formik.errors.name && formik.touched.name && (
-                          <p className="mt-1 text-sm text-red-600">{formik.errors.name}</p>
-                        )}
-                      </>
+                      <input
+                        type="email"
+                        name="email"
+                        value={student.email}
+                        onChange={handleChange}
+                        className="w-full px-3 py-2 border rounded"
+                      />
                     ) : (
-                      <p className="mt-1 text-gray-900">{user.name}</p>
+                      <p className="text-gray-700">{student.email}</p>
                     )}
                   </div>
-                  
+
                   <div>
-                    <label className="block text-sm font-medium text-gray-500">Email</label>
-                    {isEditing ? (
-                      <>
-                        <input
-                          name="email"
-                          type="email"
-                          value={formik.values.email}
-                          onChange={formik.handleChange}
-                          onBlur={formik.handleBlur}
-                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                        />
-                        {formik.errors.email && formik.touched.email && (
-                          <p className="mt-1 text-sm text-red-600">{formik.errors.email}</p>
-                        )}
-                      </>
-                    ) : (
-                      <p className="mt-1 text-gray-900">{user.email}</p>
-                    )}
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-500">Member Since</label>
-                    <p className="mt-1 text-gray-900 flex items-center">
-                      <FiCalendar className="mr-2" /> {user.joinDate}
-                    </p>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                    <button className="flex items-center text-blue-600 hover:text-blue-800">
+                      <FiLock className="mr-2" /> Change Password
+                    </button>
                   </div>
                 </div>
               </div>
-
-              {/* Bio */}
-              <div>
-                <h3 className="text-lg font-medium text-gray-900 mb-4">About Me</h3>
-                {isEditing ? (
-                  <>
-                    <textarea
-                      name="bio"
-                      rows="4"
-                      value={formik.values.bio}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                    />
-                    {formik.errors.bio && formik.touched.bio && (
-                      <p className="mt-1 text-sm text-red-600">{formik.errors.bio}</p>
-                    )}
-                    <p className="mt-1 text-xs text-gray-500 text-right">
-                      {formik.values.bio.length}/200 characters
-                    </p>
-                  </>
-                ) : (
-                  <p className="text-gray-700">{user.bio || 'No bio provided'}</p>
-                )}
-              </div>
             </div>
 
-            {/* Password Section */}
-            <div className="mt-8 pt-6 border-t border-gray-200">
-              <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
-                <FiLock className="mr-2" /> Password
-              </h3>
-              <button className="text-indigo-600 hover:text-indigo-800 font-medium">
-                Change Password
-              </button>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="mt-8 flex justify-end space-x-3">
+            <div className="mt-10 flex justify-end">
               {isEditing ? (
-                <>
+                <div className="space-x-3">
                   <button
-                    type="button"
-                    onClick={() => {
-                      setIsEditing(false);
-                      formik.resetForm();
-                    }}
-                    className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    onClick={() => setIsEditing(false)}
+                    className="px-4 py-2 border border-gray-600 rounded-md text-gray-700 hover:bg-gray-50"
                   >
                     Cancel
                   </button>
                   <button
-                    type="button"
-                    onClick={() => formik.handleSubmit()}
-                    disabled={!formik.isValid || formik.isSubmitting}
-                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                    onClick={handleSubmit}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center"
                   >
                     <FiSave className="mr-2" /> Save Changes
                   </button>
-                </>
+                </div>
               ) : (
                 <button
-                  type="button"
-                  onClick={() => {
-                    setIsEditing(true);
-                    formik.setValues({
-                      name: user.name,
-                      email: user.email,
-                      bio: user.bio,
-                    });
-                  }}
-                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  onClick={() => setIsEditing(true)}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center"
                 >
                   <FiEdit className="mr-2" /> Edit Profile
                 </button>
@@ -256,28 +175,6 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
-
-      {/* Toast Notification */}
-      {toast?.visible && (
-        <div className={`fixed bottom-4 right-4 p-4 rounded-md shadow-lg transition-all duration-300 ${toast.type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}>
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              {toast.type === 'success' ? (
-                <svg className="h-5 w-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                </svg>
-              ) : (
-                <svg className="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                </svg>
-              )}
-            </div>
-            <div className="ml-3">
-              <p className="text-sm font-medium">{toast.message}</p>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
