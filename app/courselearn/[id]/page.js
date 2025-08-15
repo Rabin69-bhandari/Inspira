@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, use ,useState, useCallback } from "react";
+import { useEffect, useState, useCallback,use } from "react";
 import { useRouter } from "next/navigation";
-import ReactPlayer from "react-player";
 import Link from "next/link";
+import Sidebar from "@/app/components/sidebar";
+import { FiChevronLeft, FiChevronRight, FiClock, FiBookOpen, FiYoutube, FiExternalLink } from "react-icons/fi";
 
-import { FiChevronLeft, FiChevronRight, FiClock, FiBookOpen } from "react-icons/fi";
 
 const CoursePage = ({ params }) => {
   const router = useRouter();
@@ -15,11 +15,6 @@ const CoursePage = ({ params }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentModuleIndex, setCurrentModuleIndex] = useState(0);
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
 
   const fetchCourse = useCallback(async () => {
     try {
@@ -102,7 +97,9 @@ const CoursePage = ({ params }) => {
   );
 
   return (
-    <div className="max-w-6xl mx-auto p-4 lg:p-8">
+    <div className="flex">
+        <Sidebar />
+    <div className=" overflow-y-scroll max-w-6xl mx-auto p-4 lg:p-8">
       {/* Course Header */}
       <div className="bg-white rounded-xl shadow-sm p-6 mb-8 border border-gray-100">
         <div className="flex flex-col md:flex-row justify-between gap-4">
@@ -132,14 +129,8 @@ const CoursePage = ({ params }) => {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         {/* Module Content */}
         <div className="lg:col-span-3">
-          {/* Video Player */}
-          {isClient && currentModule.imageUrl && (
-            <div className="bg-black rounded-xl overflow-hidden mb-6 aspect-video">
-                <Link href={currentModule.imageUrl}>Click Me</Link>
-              
-            </div>
-          )}
-
+          {/* YouTube Link Section */}
+          
           {/* Module Title and Content */}
           <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
@@ -152,6 +143,23 @@ const CoursePage = ({ params }) => {
               ))}
             </div>
           </div>
+          {currentModule.imageUrl && (
+            <div className="bg-gradient-to-r from-red-600 to-red-700 rounded-xl overflow-hidden mb-6 p-8 text-center">
+              <div className="max-w-2xl mx-auto">
+                <FiYoutube className="mx-auto text-white text-5xl mb-4" />
+                <h3 className="text-xl font-bold text-white mb-3">Watch on YouTube</h3>
+                <p className="text-red-100 mb-6">This module's video content is available on YouTube</p>
+                <Link 
+                  href={currentModule.imageUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center px-6 py-3 bg-white text-red-600 font-medium rounded-lg hover:bg-gray-50 transition"
+                >
+                  Watch Now <FiExternalLink className="ml-2" />
+                </Link>
+              </div>
+            </div>
+          )}
 
           {/* Navigation Buttons */}
           <div className="flex justify-between mt-6">
@@ -208,6 +216,7 @@ const CoursePage = ({ params }) => {
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 };
