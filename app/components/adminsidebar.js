@@ -42,8 +42,6 @@ const AdminSidebar = () => {
         <nav className="flex-1 space-y-2">
           {[
             { href: "/admin", icon: <FiHome size={20} />, label: "Admin Panel" },
-            { href: "activity", icon: <FiUser size={20} />, label: "Activity" },
-            { href: "/settings", icon: <FiSettings size={20} />, label: "Settings" },
             { href: "/admin-courses", icon: <IoBagSharp size={20} />, label: "Courses" },
             { href: "/adminnotifications", icon: <IoIosNotificationsOutline size={20} />, label: "Notification" },
             { href: "/contactreceived", icon: <MdHelpOutline size={20} />, label: "UserMessage" },
