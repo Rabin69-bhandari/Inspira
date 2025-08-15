@@ -7,6 +7,7 @@ import { IoIosNotificationsOutline } from "react-icons/io";
 import { SignOutButton } from "@clerk/nextjs";
 import { IoExitOutline } from "react-icons/io5";
 import { MdHelpOutline } from "react-icons/md";
+import { IoBagSharp } from "react-icons/io5";
 
 const AdminSidebar = () => {
   const [isOpen, setIsOpen] = useState(true);
@@ -43,6 +44,7 @@ const AdminSidebar = () => {
             { href: "/admin", icon: <FiHome size={20} />, label: "Admin Panel" },
             { href: "activity", icon: <FiUser size={20} />, label: "Activity" },
             { href: "/settings", icon: <FiSettings size={20} />, label: "Settings" },
+            { href: "/admin-courses", icon: <IoBagSharp size={20} />, label: "Courses" },
             { href: "/adminnotifications", icon: <IoIosNotificationsOutline size={20} />, label: "Notification" },
             { href: "/contactreceived", icon: <MdHelpOutline size={20} />, label: "UserMessage" },
           ].map((item, index) => (
