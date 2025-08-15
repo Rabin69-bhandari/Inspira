@@ -153,7 +153,7 @@ export default function CoursesPage() {
                 <p className="text-sm font-medium text-gray-500">Completed</p>
                 <p className="text-2xl font-semibold">
                   {courses.filter(c => c.status === 'completed').length}
-                </p>
+                </p>  
               </div>
             </div>
           </div>
