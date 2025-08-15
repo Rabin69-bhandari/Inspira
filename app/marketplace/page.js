@@ -9,7 +9,29 @@ export default function CoursesPage() {
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Fetch courses from API
+  const handleEnroll = async (courseId) => {
+    try {
+  
+      const res = await fetch("/api/save-user", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({courseId }),
+      });
+  
+      const data = await res.json();
+  
+      if (res.ok) {
+        alert("Enrolled successfully!");
+      } else {
+        alert("Enrollment failed: " + data.error);
+      }
+    } catch (error) {
+      console.error("Error enrolling:", error);
+      alert("Something went wrong!");
+    }
+  };
   const fetchCourses = async () => {
     try {
       const res = await fetch("/api/courses");
@@ -29,6 +51,7 @@ export default function CoursesPage() {
     fetchCourses();
   }, []);
 
+  
   // Filter courses based on search term
   const filteredCourses = courses.filter(course =>
     course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -166,8 +189,8 @@ export default function CoursesPage() {
                   <p className="text-gray-600 mb-4">{course.description}</p>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-gray-500">Start: {course.startDate || 'TBD'}</span>
-                    <button className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                      View Course
+                    <button onClick={() => handleEnroll(course._id)} className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                      Enroll Now
                     </button>
                   </div>
                 </div>
