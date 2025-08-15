@@ -51,6 +51,7 @@ const Sidebar = () => {
             { href: "/notifications", icon: <IoIosNotificationsOutline size={20} />, label: "Notification" },
             { href: "/contact", icon: <MdHelpOutline size={20} />, label: "Help And Support" },
             { href: "/privacy", icon: <MdOutlinePrivacyTip size={20} />, label: "Privacy" },
+            { href: "/Chatbot", icon: <MdOutlinePrivacyTip size={20} />, label: "Chatbot" },
           ].map((item, index) => (
             <Link
               key={index}
