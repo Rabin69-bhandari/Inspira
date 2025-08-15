@@ -11,18 +11,20 @@ export default function CoursesPage() {
   const [searchTerm, setSearchTerm] = useState("");
 
   const {user} = useUser()
-  console.log(user)
+
+  console.log(courses)
 
   const handleEnroll = async (courseId) => {
+
     try {
-      const userId = user?.id; // Replace with logged-in user's _id
+      const clerkId = user?.id; // Replace with logged-in user's _id
   
       const res = await fetch("/api/save-user", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ userId, courseId }),
+        body: JSON.stringify({ clerkId, courseId }),
       });
   
       const data = await res.json();
